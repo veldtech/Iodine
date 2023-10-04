@@ -1,0 +1,11 @@
+@Iodine_HostAddress = http://localhost:5198
+
+GET {{Iodine_HostAddress}}/todos/
+Accept: application/json
+
+###
+
+GET {{Iodine_HostAddress}}/todos/1
+Accept: application/json
+
+###
