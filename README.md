@@ -1,6 +1,11 @@
 # Iodine - Discord API Proxy
 This project is a very barebones implementation of a conceptual Discord API gateway proxy.
 
+This is not to be confused with a tangentially related product (Retsu), which operates on the *gateway*. 
+Both of these tools act in a synergistic manner to provide a simpler work model for end-consumers.
+
+---
+
 The idea behind this project is to effectively proxy Discord's API behind a cache layer.
 While many Discord libraries include handling caching, and especially rate-limiting, this project aims to handle both of those.
 
