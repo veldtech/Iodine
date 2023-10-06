@@ -1,8 +1,9 @@
 # Iodine - Discord API Proxy
 This project is a very barebones implementation of a conceptual Discord API gateway proxy.
 
-This is not to be confused with a tangentially related product (Retsu), which operates on the *gateway*. 
-Both of these tools act in a synergistic manner to provide a simpler work model for end-consumers.
+Iodine is very similar to Retsu in regards to functionality, however it is worth noting that Retsu
+operates on the *gateway*, while Iodine operates on the *REST API*; that being said, both Retsu and Iodine
+are designed to work in tandem, allowing developers to focus on functionality, and building simpler products. 
 
 ---
 
