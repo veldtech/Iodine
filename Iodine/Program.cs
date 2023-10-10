@@ -5,6 +5,7 @@ using System.Text.Json.Nodes;
 using CommunityToolkit.HighPerformance;
 using CommunityToolkit.HighPerformance.Buffers;
 using Iodine.PolyfillHelper;
+using Iodine.Services;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Remora.Discord.API;
@@ -44,6 +45,7 @@ services.AddStackExchangeRedisCache
 
 services.TryAddSingleton<RedisCacheProvider>();
 services.AddSingleton<ICacheProvider>(s => s.GetRequiredService<RedisCacheProvider>());
+services.Decorate<ICacheProvider, RedisTentantCacheWrapper>();
 
 services.ConfigureHttpJsonOptions(options => options.SerializerOptions.Converters.Add(new SnowflakeConverter(Constants.DiscordEpoch)));
 
@@ -202,6 +204,7 @@ file static class ResponseHelper<TEntity> where TEntity : class
             TEntity? cacheEntity = !cacheResult.IsDefined(out cacheEntity) ? res : CacheHelper<TEntity>.FastPolyFill(res, cacheEntity);
             await CacheAsync(context, cache, cacheEntity, cacheKey(res, state));
         }
+        
     }
     
     static async Task CacheAsync(HttpContext context, ICacheProvider provider, TEntity entity, CacheKey cacheKey)
