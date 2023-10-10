@@ -164,16 +164,17 @@ file static class ResponseHelper<TEntity> where TEntity : class
             }
         }
 
+        var path = context.Request.Path.Value![1..];
         var requestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
         Action<Utf8JsonWriter> restCustomization = string.IsNullOrEmpty(requestBody) ? _ => { } : json => json.WriteRawValue(requestBody);
         
         var restResult = await (requestMethod switch
         {
-            "GET"    => rest.GetAsync<TEntity>(context.Request.Path, b => b.WithRateLimitContext(cache)),
-            "PUT"    => rest.PutAsync<TEntity>(context.Request.Path, b => b.WithRateLimitContext(cache).WithJson(restCustomization), allowNullReturn: true),
-            "POST"   => rest.PostAsync<TEntity>(context.Request.Path, b => b.WithRateLimitContext(cache).WithJson(restCustomization)),
-            "PATCH"  => rest.PatchAsync<TEntity>(context.Request.Path, b => b.WithRateLimitContext(cache).WithJson(restCustomization), allowNullReturn: true),
-            "DELETE" => rest.DeleteAsync<TEntity>(context.Request.Path, b => b.WithRateLimitContext(cache), allowNullReturn: true),
+            "GET"    => rest.GetAsync<TEntity>(path, b => b.WithRateLimitContext(cache)),
+            "PUT"    => rest.PutAsync<TEntity>(path, b => b.WithRateLimitContext(cache).WithJson(restCustomization, false), allowNullReturn: true),
+            "POST"   => rest.PostAsync<TEntity>(path, b => b.WithRateLimitContext(cache).WithJson(restCustomization, false)),
+            "PATCH"  => rest.PatchAsync<TEntity>(path, b => b.WithRateLimitContext(cache).WithJson(restCustomization, false), allowNullReturn: true),
+            "DELETE" => rest.DeleteAsync<TEntity>(path, b => b.WithRateLimitContext(cache), allowNullReturn: true),
             _        => Task.FromResult(Result<TEntity>.FromError(new InvalidOperationError("Unknown request method"))),
         });
 
