@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Remora.Discord.API;
 using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Abstractions.Rest;
+using Remora.Discord.API.Objects;
 using Remora.Discord.Caching;
 using Remora.Discord.Caching.Abstractions;
 using Remora.Discord.Caching.Abstractions.Services;
@@ -225,7 +226,7 @@ file static class ResponseHelper<TEntity> where TEntity : class
     {
         var (statusCode, data) = fetchError switch
         {
-            RestResultError<IRestError> re => ((int)HttpStatusCode.BadRequest, re.Message),
+            RestResultError<RestError> re => ((int)HttpStatusCode.BadRequest, re.Message),
             HttpResultError http           => ((int)http.StatusCode, http.Message),
             _                              => throw new UnreachableException("The rest client only returns two types of errors."),
         };
