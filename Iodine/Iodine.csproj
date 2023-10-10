@@ -7,10 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Remora.Discord.Caching.Redis" Version="1.1.5" />
       <PackageReference Include="Remora.Discord.Rest" Version="48.0.0" />
+      <PackageReference Include="Remora.Discord.Caching.Redis" Version="1.1.5" />
     </ItemGroup>
-
-
 
 </Project>
