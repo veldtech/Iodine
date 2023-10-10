@@ -49,32 +49,8 @@ services.ConfigureHttpJsonOptions(options => options.SerializerOptions.Converter
 
 var app = builder.Build();
 
-// This is what will thunk API requests
-app.MapFallback
-(
-    async (HttpContext context, IRestHttpClient rest, ICacheProvider cache) =>
-    {
-        var restResult = await (context.Request.Method switch
-        {
-            "GET"    => rest.GetAsync<JsonNode>(context.Request.Path, b => b.WithRateLimitContext(cache)),
-            "PUT"    => rest.PutAsync<JsonNode>(context.Request.Path, b => b.WithRateLimitContext(cache)),
-            "POST"   => rest.PostAsync<JsonNode>(context.Request.Path, b => b.WithRateLimitContext(cache)),
-            "PATCH"  => rest.PatchAsync<JsonNode>(context.Request.Path, b => b.WithRateLimitContext(cache)),
-            "DELETE" => rest.DeleteAsync<JsonNode>(context.Request.Path, b => b.WithRateLimitContext(cache)),
-            _        => Task.FromResult(Result<JsonNode>.FromError(new InvalidOperationError("Unknown request method"))),
-        });
-
-        if (restResult.IsSuccess)
-        {
-            await ResponseHelper<JsonNode>.RespondAsync(context, restResult.Entity);
-        }
-        else
-        {
-            await ResponseHelper<JsonNode>.HandleRestErrorAsync(context, restResult.Error);
-        }
-
-    }
-);
+app.UsePathBase(new PathString("/api/v10"));
+app.UseRouting();
 
 // Gets a message from the API.
 app.MapGet
@@ -132,6 +108,34 @@ app.MapDelete
             static (IMessage? _, (ulong cid, ulong mid) state) => new KeyHelpers.MessageCacheKey(new(state.cid), new(state.mid)),
             (channelID, messageID)
         )
+);
+
+
+// This is what will thunk API requests
+app.MapFallback
+(
+    async (HttpContext context, IRestHttpClient rest, ICacheProvider cache) =>
+    {
+        var restResult = await (context.Request.Method switch
+        {
+            "GET"    => rest.GetAsync<JsonNode>(context.Request.Path, b => b.WithRateLimitContext(cache)),
+            "PUT"    => rest.PutAsync<JsonNode>(context.Request.Path, b => b.WithRateLimitContext(cache)),
+            "POST"   => rest.PostAsync<JsonNode>(context.Request.Path, b => b.WithRateLimitContext(cache)),
+            "PATCH"  => rest.PatchAsync<JsonNode>(context.Request.Path, b => b.WithRateLimitContext(cache)),
+            "DELETE" => rest.DeleteAsync<JsonNode>(context.Request.Path, b => b.WithRateLimitContext(cache)),
+            _        => Task.FromResult(Result<JsonNode>.FromError(new InvalidOperationError("Unknown request method"))),
+        });
+
+        if (restResult.IsSuccess)
+        {
+            await ResponseHelper<JsonNode>.RespondAsync(context, restResult.Entity);
+        }
+        else
+        {
+            await ResponseHelper<JsonNode>.HandleRestErrorAsync(context, restResult.Error);
+        }
+
+    }
 );
 
 app.Run();
