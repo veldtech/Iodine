@@ -51,15 +51,15 @@ var app = builder.Build();
 // This is what will thunk API requests
 app.MapFallback
 (
-    async (HttpContext context, IRestHttpClient rest) =>
+    async (HttpContext context, IRestHttpClient rest, ICacheProvider cache) =>
     {
         var restResult = await (context.Request.Method switch
         {
-            "GET"    => rest.GetAsync<JsonNode>(context.Request.Path),
-            "PUT"    => rest.PutAsync<JsonNode>(context.Request.Path),
-            "POST"   => rest.PostAsync<JsonNode>(context.Request.Path),
-            "PATCH"  => rest.PatchAsync<JsonNode>(context.Request.Path),
-            "DELETE" => rest.DeleteAsync<JsonNode>(context.Request.Path),
+            "GET"    => rest.GetAsync<JsonNode>(context.Request.Path, b => b.WithRateLimitContext(cache)),
+            "PUT"    => rest.PutAsync<JsonNode>(context.Request.Path, b => b.WithRateLimitContext(cache)),
+            "POST"   => rest.PostAsync<JsonNode>(context.Request.Path, b => b.WithRateLimitContext(cache)),
+            "PATCH"  => rest.PatchAsync<JsonNode>(context.Request.Path, b => b.WithRateLimitContext(cache)),
+            "DELETE" => rest.DeleteAsync<JsonNode>(context.Request.Path, b => b.WithRateLimitContext(cache)),
             _        => Task.FromResult(Result<JsonNode>.FromError(new InvalidOperationError("Unknown request method"))),
         });
 
@@ -165,11 +165,11 @@ file static class ResponseHelper<TEntity> where TEntity : class
     
         var restResult = await (requestMethod switch
         {
-            "GET"    => rest.GetAsync<TEntity>(context.Request.Path),
-            "PUT"    => rest.PutAsync<TEntity>(context.Request.Path, allowNullReturn: true),
-            "POST"   => rest.PostAsync<TEntity>(context.Request.Path),
-            "PATCH"  => rest.PatchAsync<TEntity>(context.Request.Path, allowNullReturn: true),
-            "DELETE" => rest.DeleteAsync<TEntity>(context.Request.Path, allowNullReturn: true),
+            "GET"    => rest.GetAsync<TEntity>(context.Request.Path, b => b.WithRateLimitContext(cache)),
+            "PUT"    => rest.PutAsync<TEntity>(context.Request.Path, b => b.WithRateLimitContext(cache), allowNullReturn: true),
+            "POST"   => rest.PostAsync<TEntity>(context.Request.Path, b => b.WithRateLimitContext(cache)),
+            "PATCH"  => rest.PatchAsync<TEntity>(context.Request.Path, b => b.WithRateLimitContext(cache), allowNullReturn: true),
+            "DELETE" => rest.DeleteAsync<TEntity>(context.Request.Path, b => b.WithRateLimitContext(cache), allowNullReturn: true),
             _        => Task.FromResult(Result<TEntity>.FromError(new InvalidOperationError("Unknown request method"))),
         });
 
