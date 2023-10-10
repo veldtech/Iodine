@@ -70,14 +70,14 @@ app.MapGet
 // Posts a message to a channel, caching the result.
 app.MapPost
 (
-    "/channels/{channelID}/messages/",
+    "/channels/{channelID}/messages",
     (HttpContext context, IRestHttpClient rest, ICacheProvider cache, ulong channelID)
         => ResponseHelper<IMessage>.HandleRequestAsync
         (
             context,
             rest,
             cache,
-            static (message, cid) => new KeyHelpers.MessageCacheKey(message!.ChannelID, message.ID),
+            static (message, cid) => new KeyHelpers.MessageCacheKey(new(cid), message.ID),
             channelID
         )
 );
