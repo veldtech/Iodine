@@ -45,7 +45,7 @@ services.AddStackExchangeRedisCache
 
 services.TryAddSingleton<RedisCacheProvider>();
 services.AddSingleton<ICacheProvider>(s => s.GetRequiredService<RedisCacheProvider>());
-services.Decorate<ICacheProvider, RedisTentantCacheWrapper>();
+services.Decorate<ICacheProvider, RedisTenantCacheWrapper>();
 
 services.ConfigureHttpJsonOptions(options => options.SerializerOptions.Converters.Add(new SnowflakeConverter(Constants.DiscordEpoch)));
 

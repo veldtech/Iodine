@@ -11,7 +11,7 @@ using Remora.Results;
 
 namespace Iodine.Services;
 
-public class RedisTentantCacheWrapper(ICacheProvider _actual, ITokenStore _token) : ICacheProvider
+public class RedisTenantCacheWrapper(ICacheProvider _actual, ITokenStore _token) : ICacheProvider
 {
     private readonly Snowflake _tokenID = ConvertTokenToSnowflake(_token.Token);
 
