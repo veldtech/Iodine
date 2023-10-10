@@ -7,11 +7,11 @@ namespace Iodine.PolyfillHelper;
 
 public static class CacheHelper<T>
 {
-    private static readonly Func<T, T, T> _polyfill = (Func<T, T, T>)ExpressionBuilderBuilder.Build<T>();
+    private static readonly Func<T, T, T> _polyfill = (Func<T, T, T>)PolyfillBuilder.Build<T>();
     public static T FastPolyFill(T old, T @new) => _polyfill(old, @new);
 }
 
-file static class ExpressionBuilderBuilder
+file static class PolyfillBuilder
 {
     public static Delegate Build<T>()
     {
